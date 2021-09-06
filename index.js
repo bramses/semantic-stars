@@ -5,6 +5,7 @@ const fs = require('fs')
 require('dotenv').config() 
 const openai = new OpenAI(process.env.OPENAI_API_KEY)
 
+const CALL_GITHUB = false
 
 const exampleRepos = [
     {
@@ -116,9 +117,15 @@ const writeToFile = async (repos) => {
 }
 
 const main = async () => {
-    //const repos = await fetchAllStarredRepos('bramses')
-    await writeToFile(exampleRepos)
-    searchStars('3d', exampleRepos, 5)
+    let repos
+    if (CALL_GITHUB) {
+        repos = await fetchAllStarredRepos('bramses')
+        await writeToFile(repos)
+    } else {
+        repos = JSON.parse(fs.readFileSync('./repos.json', 'utf8'))
+    }
+    
+    searchStars('3d', repos, 5)
 }
 
 main()
